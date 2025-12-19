@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JD PRO SECURE</title>
+    <style>
+        :root {
+            --primary: #0b3c5d;
+            --secondary: #328cc1;
+            --accent: #d9b310;
+            --bg: #f4f6f8;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --text: #333;
+        }
+
+        #lockOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(11, 60, 93, .98);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            backdrop-filter: blur(10px);
+        }
+
+        .lock-box {
+            background: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            color: var(--text);
+            box-shadow: 0 10px 30px rgba(0,0,0,.5);
+            width: 320px;
+        }
+
+        .lock-box h2 {
+            color: var(--primary);
+            margin-top: 0;
+        }
+
+        .lock-box input {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1.2rem;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .lock-box button {
+            background: var(--accent);
+            color: var(--primary);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: var(--bg);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            color: var(--text);
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 340px;
+            background: var(--primary);
+            color: #fff;
+            padding: 20px;
+            overflow-y: auto;
+            flex-shrink: 0;
+            border-right: 4px solid var(--accent);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto;
+            background: #fff;
+        }
+
+        .brand-h1 {
+            color: var(--accent);
+            margin: 0;
+            font-size: 1.3rem;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .brand-tag {
+            font-size: .7rem;
+            opacity: .8;
+            font-style: italic;
+            display: block;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: .8rem;
+            margin-top: 15px;
+            border-left: 4px solid var(--accent);
+            padding-left: 10px;
+            text-transform: uppercase;
+            color: #eee;
+        }
+
+        h3 {
+            font-size: 1rem;
+            color: var(--primary);
+            border-bottom: 2px solid #eee;
+            padding-bottom: 5px;
+            margin-top: 25px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-group {
+            background: rgba(255, 255, 255, .1);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            font-size: .7rem;
+            margin-bottom: 4px;
+            color: #ccc;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 4px;
+            border: none;
+            margin-bottom: 8px;
+            box-sizing: border-box;
+            font-size: .9rem;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 8px;
+            transition: .2s;
+        }
+
+        .btn-calc {
+            background: var(--accent);
+            color: var(--primary);
+        }
+
+        .btn-excel {
+            background: var(--secondary);
+            color: #fff;
+        }
+
+        .btn-import {
+            background: #455a64;
+            color: #fff;
+            display: block;
+            text-align: center;
+            font-size: .85rem;
+            font-weight: 700;
+            border-radius: 5px;
+            padding: 12px;
+            cursor: pointer;
+            margin-bottom: 8px;
+        }
+
+        .btn-pdf {
+            background: #222;
+            color: #fff;
+            border: 1px solid var(--accent);
+        }
+
+        .btn-reset {
+            background: var(--danger);
+            color: #fff;
+            margin-top: 20px;
+            font-size: .7rem;
+            opacity: .7;
+        }
+
+        .rule-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            border-radius: 4px;
+            font-size: .9rem;
+            margin-bottom: 10px;
+            color: #856404;
+            font-weight: 700;
+        }
+
+        .mgt-summary {
+            background: #e3f2fd;
+            border-left: 5px solid var(--secondary);
+            padding: 12px;
+            border-radius: 4px;
+            font-size: .85rem;
+            margin-bottom: 15px;
+            color: #0d47a1;
+            font-weight: 700;
+        }
+
+        .report-header {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 10px;
+        }
+
+        .logo-container {
+            width: 120px;
+            height: 120px;
+            border: 1px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        #logoImg {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .stat-card {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        .stat-label {
+            font-size: .6rem;
+            color: #666;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .stat-value {
+            font-size: 1rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .progress-container {
+            background: #eee;
+            border-radius: 10px;
+            height: 14px;
+            width: 100%;
+            margin-bottom: 10px;
+            overflow: hidden;
+            border: 1px solid #ddd;
+        }
+
+        .progress-bar {
+            background: var(--success);
+            height: 100%;
+            width: 0;
+            transition: .5s;
+        }
+
+        .top-scroll-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            height: 18px;
+            margin-bottom: 2px;
+            background: #f1f1f1;
+            border-radius: 5px;
+        }
+
+        .top-scroll-content {
+            height: 1px;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #fff;
+            max-height: 500px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1850px;
+            table-layout: fixed;
+        }
+
+        th {
+            background: #f8f9fa;
+            color: var(--primary);
+            font-size: .65rem;
+            padding: 8px;
+            border: 1px solid #ddd;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        td {
+            border: 1px solid #eee;
+            padding: 6px;
+            text-align: center;
+            font-size: .7rem;
+        }
+
+        .kyc-cell {
+            border: 1px solid #eee;
+            background: #fffdf5;
+            padding: 4px;
+            border-radius: 3px;
+            outline: 0;
+            text-align: left;
+            display: block;
+            width: 92%;
+            min-height: 1.2em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-transform: uppercase;
+        }
+
+        .summary-table {
+            width: 400px!important;
+            min-width: 400px!important;
+            margin-top: 20px;
+            border: 2px solid var(--primary);
+        }
+
+        .summary-table th {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 5mm;
+            }
+
+            body {
+                display: block;
+                background: #fff;
+                height: auto;
+            }
+
+            .sidebar, .btn-reset, .btn-calc, .top-scroll-wrapper, .btn-import, .btn-excel, .btn-pdf, #lockOverlay {
+                display: none!important;
+            }
+
+            .report-header {
+                display: flex!important;
+            }
+
+            .main-content {
+                padding: 0!important;
+                width: 100%!important;
+                overflow: visible!important;
+                display: block;
+            }
+
+            .table-wrapper {
+                overflow: visible!important;
+                max-height: none!important;
+                border: none;
+                width: 100%!important;
+            }
+
+            table {
+                min-width: 100%!important;
+                width: 100%!important;
+                table-layout: fixed!important;
+                font-size: .48rem!important;
+            }
+
+            th, td {
+                padding: 2px!important;
+                border: .5px solid #999!important;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: repeat(7, 1fr)!important;
+                gap: 3px;
+            }
+
+            .stat-card {
+                border: 1px solid #999;
+            }
+
+            .kyc-cell {
+                white-space: normal!important;
+                width: 100%;
+                border: none;
+                background: 0 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="lockOverlay">
+        <div class="lock-box">
+            <h1 class="brand-h1" style="color:var(--primary)">JD PRO SECURE</h1>
+            <h2>Enter Master Key</h2>
+            <input type="password" id="masterKey" placeholder="••••" onkeypress="if(event.key==='Enter') verifyKey()">
+            <button onclick="verifyKey()">ACCESS PROJECT</button>
+            <p id="lockError" style="color:red;font-size:.8rem;margin-top:10px;display:none">Invalid Key. Access Denied.</p>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <h1 class="brand-h1">KISHORES JD PRO</h1>
+        <span class="brand-tag">Elite Master Suite</span>
+
+        <h2>1. Project Info</h2>
+        <div class="input-group">
+            <label>Project Name</label>
+            <input id="projName" type="text" placeholder="Project Name" oninput="saveToMemory()">
+            <label>Upload Project Logo</label>
+            <input type="file" accept="image/*" onchange="handleLogo(this)" style="color:#fff;font-size:.7rem">
+        </div>
+
+        <h2>2. Land Terms</h2>
+        <div class="input-group">
+            <label>Acres & Guntas</label>
+            <div style="display:flex;gap:5px">
+                <input id="acres" type="number" value="1" oninput="calculate()">
+                <input id="guntas" type="number" value="0" oninput="calculate()">
+            </div>
+            <label>FSI / FAR</label>
+            <input id="fsi" type="number" value="2.25" step="0.01" oninput="calculate()">
+            <label>Total Land Value (₹)</label>
+            <input id="landVal" value="10,00,00,000" oninput="formatINR(this);calculate()">
+            <label>JD Ratio</label>
+            <select id="jdRatio" onchange="calculate()">
+                <option value="40" selected>60/40 (40% Share)</option>
+                <option value="35">65/35 (35% Share)</option>
+                <option value="30">70/30 (30% Share)</option>
+                <option value="25">75/25 (25% Share)</option>
+            </select>
+            <label>Organizer Fee (%)</label>
+            <input id="mgtPct" type="number" value="5.0" step="0.1" oninput="calculate()">
+        </div>
+
+        <h2>3. Configuration</h2>
+        <div class="input-group">
+            <label>Unit Sizes (sft)</label>
+            <input id="unitSizeList" type="text" value="1200, 1500, 1700, 2000" oninput="updateDropdowns();saveToMemory()">
+            <label>Max Floors</label>
+            <input id="maxFloors" type="number" value="14" oninput="updateDropdowns();saveToMemory()">
+            <label>No. of Owners</label>
+            <input id="ownerCount" type="number" value="32" oninput="initTable();calculate()">
+        </div>
+
+        <button class="btn-calc" onclick="calculate()">REFRESH DASHBOARD</button>
+        <button class="btn-excel" onclick="exportCSV()">EXPORT EXCEL (.CSV)</button>
+        <label class="btn-import">
+            IMPORT DATA (.CSV)
+            <input type="file" id="csvFile" style="display:none" accept=".csv" onchange="importCSV(this)">
+        </label>
+        <button class="btn-pdf" onclick="window.print()">GENERATE PDF REPORT</button>
+        <button class="btn-reset" onclick="resetAll()">⚠ RESET ALL DATA</button>
+    </div>
+
+    <div class="main-content">
+        <div class="report-header">
+            <div>
+                <h1 style="margin:0;color:var(--primary);font-size:1.8rem">KISHORES JD PRO</h1>
+                <p id="reportProjName" style="margin:5px 0;font-weight:700;color:var(--accent);font-size:1.1rem"></p>
+                <p style="margin:0;font-size:.7rem;color:#666">Generated on: <span id="printDate"></span></p>
+            </div>
+            <div class="logo-container">
+                <img id="logoImg" src="" alt="Logo">
+            </div>
+        </div>
+
+        <h2 id="viewProjName" style="color:var(--primary);font-size:1.4rem;border:none;margin:0 0 10px 0">PROJECT ALLOCATION SHEET</h2>
+
+        <div id="ruleThumb" class="rule-box">Rule of Thumb: Sustain 32 owners @ 1500 sft avg.</div>
+        <div class="mgt-summary">Organizer Summary: Management Fee ₹<span id="mgtFeeDisplay">0</span></div>
+
+        <h3>Financial Snapshot</h3>
+        <div class="dashboard-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Acres</div>
+                <div class="stat-value" id="dispAcres">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Guntas</div>
+                <div class="stat-value" id="dispGuntas">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">FSI/FAR</div>
+                <div class="stat-value" id="dispFSI">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Group Saleable</div>
+                <div class="stat-value" id="dispSaleable">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Land Cost (SFT)</div>
+                <div class="stat-value" id="dispLandSft">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Org. Fee (SFT)</div>
+                <div class="stat-value" id="dispFeeSft">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Internal Rate</div>
+                <div class="stat-value" id="dispTotalRate" style="color:var(--success)">0</div>
+            </div>
+        </div>
+
+        <h3>Area Utilization Tracker</h3>
+        <div class="progress-container">
+            <div id="pBar" class="progress-bar"></div>
+        </div>
+        <div class="dashboard-grid" style="grid-template-columns: repeat(3, 1fr);">
+            <div class="stat-card">
+                <div class="stat-label">Allocated sft</div>
+                <div class="stat-value" id="utilAlloc">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Remaining sft</div>
+                <div class="stat-value" id="utilRem">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Status</div>
+                <div class="stat-value" id="utilStatus">VALID</div>
+            </div>
+        </div>
+
+        <h3>Individual Owner Allotment List</h3>
+        <div class="top-scroll-wrapper" id="topScroll">
+            <div class="top-scroll-content" id="topScrollInner"></div>
+        </div>
+        <div class="table-wrapper" id="tableWrapper">
+            <table id="masterTable">
+                <thead>
+                    <tr>
+                        <th style="width:30px">Sl</th>
+                        <th style="width:160px">Owner Name</th>
+                        <th style="width:80px">Size</th>
+                        <th style="width:60px">Floor</th>
+                        <th style="width:100px">Land (₹)</th>
+                        <th style="width:100px">Fee (₹)</th>
+                        <th style="width:110px">Total (₹)</th>
+                        <th style="width:130px">So, Wo, Do</th>
+                        <th style="width:40px">Age</th>
+                        <th style="width:130px">AADHAAR</th>
+                        <th style="width:100px">PAN</th>
+                        <th style="width:100px">Mobile</th>
+                        <th style="width:180px">Address</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <h3>Group Size Summary</h3>
+        <table class="summary-table">
+            <thead>
+                <tr>
+                    <th>Unit Size (sft)</th>
+                    <th>Owner Count</th>
+                    <th>Total SFT</th>
+                </tr>
+            </thead>
+            <tbody id="summaryBody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const _0x1a2b = "KISHORE2025";
+
+        function verifyKey() {
+            const t = document.getElementById("masterKey").value;
+            t === _0x1a2b ? (document.getElementById("lockOverlay").style.display = "none", document.body.style.overflow = "auto") : document.getElementById("lockError").style.display = "block"
+        }
+
+        const tScroll = document.getElementById("topScroll"),
+            tWrapper = document.getElementById("tableWrapper"),
+            tInner = document.getElementById("topScrollInner"),
+            mTable = document.getElementById("masterTable");
+        tWrapper.onscroll = () => { tScroll.scrollLeft = tWrapper.scrollLeft }, tScroll.onscroll = () => { tWrapper.scrollLeft = tScroll.scrollLeft };
+
+        function handleLogo(t) {
+            if (t.files && t.files[0]) {
+                const e = new FileReader;
+                e.onload = t => { document.getElementById("logoImg").src = t.target.result, saveToMemory() }, e.readAsDataURL(t.files[0])
+            }
+        }
+
+        function syncScrollWidth() { tInner.style.width = mTable.offsetWidth + "px" }
+
+        function formatINR(t) {
+            let e = t.value.replace(/,/g, "");
+            t.value = Number(e).toLocaleString("en-IN")
+        }
+
+        const toINR = t => Math.round(t).toLocaleString("en-IN"),
+            parseVal = t => Number(t.toString().replace(/,/g, ""));
+
+        function saveToMemory() {
+            const t = {
+                sidebar: {
+                    projName: document.getElementById("projName").value,
+                    acres: document.getElementById("acres").value,
+                    guntas: document.getElementById("guntas").value,
+                    fsi: document.getElementById("fsi").value,
+                    landVal: document.getElementById("landVal").value,
+                    jdRatio: document.getElementById("jdRatio").value,
+                    mgtPct: document.getElementById("mgtPct").value,
+                    ownerCount: document.getElementById("ownerCount").value,
+                    maxFloors: document.getElementById("maxFloors").value,
+                    unitSizeList: document.getElementById("unitSizeList").value,
+                    logo: document.getElementById("logoImg").src
+                },
+                rows: []
+            };
+            document.querySelectorAll("#masterTable tbody tr").forEach(e => {
+                const n = e.querySelectorAll(".kyc-cell");
+                t.rows.push({
+                    n: n[0].innerText,
+                    s: e.querySelector(".size-sel").value,
+                    f: e.querySelector(".floor-sel").value,
+                    rel: n[1].innerText,
+                    age: n[2].innerText,
+                    aad: n[3].innerText,
+                    p: n[4].innerText,
+                    mob: n[5].innerText,
+                    adr: n[6].innerText
+                })
+            }), localStorage.setItem("KishoreJDProV9", JSON.stringify(t)), document.getElementById("viewProjName").innerText = t.sidebar.projName || "PROJECT ALLOCATION SHEET", document.getElementById("reportProjName").innerText = t.sidebar.projName, document.getElementById("printDate").innerText = (new Date).toLocaleString()
+        }
+
+        function loadFromMemory() {
+            const t = localStorage.getItem("KishoreJDProV9");
+            if (!t) return void initTable();
+            const e = JSON.parse(t);
+            Object.keys(e.sidebar).forEach(t => { "logo" === t ? document.getElementById("logoImg").src = e.sidebar[t] : document.getElementById(t).value = e.sidebar[t] }), initTable();
+            const n = document.querySelectorAll("#masterTable tbody tr");
+            e.rows.forEach((t, e) => {
+                if (n[e]) {
+                    const l = n[e].querySelectorAll(".kyc-cell");
+                    l[0].innerText = t.n, n[e].querySelector(".size-sel").value = t.s, n[e].querySelector(".floor-sel").value = t.f.trim(), l[1].innerText = t.rel, l[2].innerText = t.age, l[3].innerText = t.aad, l[4].innerText = t.p, l[5].innerText = t.mob, l[6].innerText = t.adr
+                }
+            }), calculate()
+        }
+
+        function calculate() {
+            const t = document.getElementById("acres").value,
+                e = document.getElementById("guntas").value,
+                n = document.getElementById("fsi").value,
+                l = parseVal(document.getElementById("landVal").value),
+                a = document.getElementById("jdRatio").value / 100,
+                r = document.getElementById("mgtPct").value / 100,
+                i = (43560 * t + 1089 * e) * n * 1.25 * a,
+                o = i > 0 ? l / i : 0,
+                s = l * r,
+                c = i > 0 ? s / i : 0;
+            document.getElementById("dispAcres").innerText = t, document.getElementById("dispGuntas").innerText = e, document.getElementById("dispFSI").innerText = n, document.getElementById("mgtFeeDisplay").innerText = toINR(s), document.getElementById("dispSaleable").innerText = Math.round(i).toLocaleString() + " sft", document.getElementById("dispLandSft").innerText = toINR(o), document.getElementById("dispFeeSft").innerText = toINR(c), document.getElementById("dispTotalRate").innerText = toINR(o + c);
+            let d = 0,
+                u = {};
+            document.querySelectorAll("#masterTable tbody tr").forEach(t => {
+                const e = t.querySelector(".size-sel").value;
+                t.querySelector(".l-cost").innerText = toINR(e * o), t.querySelector(".f-cost").innerText = toINR(e * c), t.querySelector(".t-cost").innerText = toINR(e * (o + c)), d += Number(e), u[e] = (u[e] || 0) + 1
+            });
+            const g = i - d;
+            document.getElementById("utilAlloc").innerText = Math.round(d).toLocaleString(), document.getElementById("utilRem").innerText = Math.round(g).toLocaleString(), document.getElementById("pBar").style.width = Math.min(d / i * 100, 100) + "%", document.getElementById("utilStatus").innerText = g >= 0 ? "VALID" : "EXCEEDED", document.getElementById("utilStatus").style.color = g >= 0 ? "green" : "red";
+            let m = "";
+            Object.keys(u).sort().forEach(t => { m += `<tr><td>${t} sft</td><td>${u[t]}</td><td>${(t * u[t]).toLocaleString()} sft</td></tr>` }), document.getElementById("summaryBody").innerHTML = m, syncScrollWidth(), saveToMemory()
+        }
+
+        function initTable() {
+            const t = document.querySelector("#masterTable tbody"),
+                e = document.getElementById("ownerCount").value;
+            t.innerHTML = "";
+            for (let n = 1; n <= e; n++) t.insertRow().innerHTML = `<td>${n}</td><td><span class="kyc-cell" contenteditable="true"></span></td><td><select class="size-sel" onchange="calculate()"></select></td><td><select class="floor-sel" onchange="saveToMemory()"></select></td><td class="l-cost"></td><td class="f-cost"></td><td class="t-cost" style="font-weight:700"></td><td><span class="kyc-cell" contenteditable="true"></span></td><td><span class="kyc-cell" contenteditable="true"></span></td><td><span class="kyc-cell" contenteditable="true"></span></td><td><span class="kyc-cell" contenteditable="true"></span></td><td><span class="kyc-cell" contenteditable="true"></span></td><td><span class="kyc-cell" contenteditable="true"></span></td>`;
+            updateDropdowns()
+        }
+
+        function updateDropdowns() {
+            const t = document.getElementById("unitSizeList").value.split(",").map(t => t.trim()).filter(t => !!t),
+                e = document.getElementById("maxFloors").value;
+            document.querySelectorAll(".size-sel").forEach(e => {
+                const n = e.value;
+                let l = '<option value="0">Size</option>';
+                t.forEach(t => { l += `<option value="${t}" ${t === n ? "selected" : ""}>${t}</option>` }), e.innerHTML = l
+            }), document.querySelectorAll(".floor-sel").forEach(t => {
+                const n = t.value;
+                let l = '<option value="G">G</option>';
+                for (let a = 1; a <= e; a++) l += `<option value="F${a}" ${"F" + a === n ? "selected" : ""}>F${a}</option>`;
+                t.innerHTML = l
+            })
+        }
+
+        function exportCSV() {
+            const t = document.getElementById("projName").value || "PROJECT",
+                e = ["Sl,Name,Size,Floor,LandCost,OrgFee,TotalCost,Relation,Age,Aadhaar,PAN,Mobile,Address"];
+            document.querySelectorAll("#masterTable tbody tr").forEach(t => {
+                const n = t.querySelectorAll(".kyc-cell");
+                e.push([t.cells[0].innerText, n[0].innerText.replace(/,/g, ""), t.querySelector(".size-sel").value, t.querySelector(".floor-sel").value, t.querySelector(".l-cost").innerText.replace(/,/g, ""), t.querySelector(".f-cost").innerText.replace(/,/g, ""), t.querySelector(".t-cost").innerText.replace(/,/g, ""), n[1].innerText.replace(/,/g, ""), n[2].innerText, n[3].innerText, n[4].innerText, n[5].innerText, n[6].innerText.replace(/,/g, " ")].join(","))
+            });
+            const n = document.createElement("a");
+            n.href = URL.createObjectURL(new Blob([e.join("\n")], { type: "text/csv" })), n.download = t + " Export.csv", n.click()
+        }
+
+        function importCSV(t) {
+            const e = new FileReader;
+            e.onload = function() {
+                const t = e.result.split("\n").filter(t => !!t.trim() && !isNaN(t.split(",")[0]));
+                document.getElementById("ownerCount").value = t.length, initTable();
+                const n = document.querySelectorAll("#masterTable tbody tr");
+                t.forEach((t, e) => {
+                    const l = t.split(",");
+                    if (n[e]) {
+                        const a = n[e].querySelectorAll(".kyc-cell");
+                        a[0].innerText = l[1], n[e].querySelector(".size-sel").value = l[2], n[e].querySelector(".floor-sel").value = l[3].trim(), a[1].innerText = l[7], a[2].innerText = l[8], a[3].innerText = l[9], a[4].innerText = l[10], a[5].innerText = l[11], a[6].innerText = l[12]
+                    }
+                }), calculate()
+            }, e.readAsText(t.files[0])
+        }
+
+        function resetAll() { confirm("DANGER: Wipe data?") && (localStorage.removeItem("KishoreJDProV9"), location.reload()) }
+        window.onload = loadFromMemory, window.onresize = syncScrollWidth;
+    </script>
+</body>
+</html>
