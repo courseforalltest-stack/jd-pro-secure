@@ -434,6 +434,20 @@
     </style>
 </head>
 <body>
+
+    <div id="lockOverlay">
+    <div class="lock-box">
+        <h2 style="color:#0b3c5d">🔒 ACCESS LOCKED</h2>
+        <p style="color:#666">Please enter the security key to continue</p>
+        <input type="password" id="masterKey" placeholder="Enter security key..." 
+               style="width:100%;padding:12px;margin:20px 0;border:2px solid #ddd;border-radius:6px;font-size:16px;">
+        <button onclick="checkMasterKey()" 
+                style="width:100%;padding:12px;background:#0b3c5d;color:white;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">
+            UNLOCK TOOL
+        </button>
+        <p id="errorMsg" style="color:#e74c3c;margin-top:15px;display:none;font-weight:bold;">❌ Invalid security key!</p>
+    </div>
+</div>
     <div id="lockOverlay">
         <div class="lock-box">
             <h1 class="brand-h1" style="color:var(--primary)">JD PRO SECURE</h1>
@@ -607,6 +621,35 @@
     </div>
 
     <script>
+
+        const SITE_ACTIVE = true;
+const MASTER_KEY = atob("S0lTSE9SRTIwMjU=");
+
+        function checkAccess() {
+    if (!SITE_ACTIVE) {
+        document.body.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#0b3c5d;color:white;font-family:sans-serif;text-align:center;">' +
+                                  '<h1>⚠️ SERVICE INACTIVE</h1>' +
+                                  '<p>This tool is currently locked by the administrator.</p>' +
+                                  '</div>';
+        return;
+    }
+    const sessionKey = sessionStorage.getItem("kishore_auth");
+    if (sessionKey === MASTER_KEY) {
+        document.getElementById("lockOverlay").style.display = "none";
+    }
+}
+
+function checkMasterKey() {
+    const input = document.getElementById("masterKey").value;
+    const error = document.getElementById("errorMsg");
+    if (input === MASTER_KEY) {
+        sessionStorage.setItem("kishore_auth", MASTER_KEY);
+        document.getElementById("lockOverlay").style.display = "none";
+        error.style.display = "none";
+    } else {
+        error.style.display = "block";
+    }
+}
         const _0x1a2b = "KISHORE2025";
 
         function verifyKey() {
